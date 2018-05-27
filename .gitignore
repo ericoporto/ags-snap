@@ -1,0 +1,8 @@
+# snapcraft local build dirs
+parts
+stage
+snap
+src
+# snapcraft build artifacts
+*.snap
+*.tar.gz
