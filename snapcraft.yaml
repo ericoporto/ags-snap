@@ -15,9 +15,9 @@ apps:
 parts:
   ags:
     plugin: make
-    override-build: |
-     make --directory=Engine
-     cp Engine/ags $SNAPCRAFT_PART_INSTALL
+    make-parameters:
+      - --directory=Engine
+    make-install-var: PREFIX
     source-type: tar
     source: https://github.com/adventuregamestudio/ags/archive/v.3.4.1.13.tar.gz
     build-packages:
