@@ -6,7 +6,7 @@ description: |
   When installed, just run ags in the folder that contains the game!
 
 grade: devel # must be 'stable' to release into candidate/stable channels
-confinement: devmode # use 'strict' once you have the right plugs and slots
+confinement: classic # use 'strict' once you have the right plugs and slots
 
 apps:
   ags:

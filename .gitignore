@@ -1,4 +1,5 @@
 # snapcraft local build dirs
+prime
 parts
 stage
 snap
