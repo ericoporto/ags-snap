@@ -34,3 +34,13 @@ parts:
       - libtheora-dev 
       - libvorbis-dev
       - libogg-dev
+    stage-packages:
+      - libx11-6
+      - libxcursor1
+      - libpng12-0
+      - libaldmb1
+      - libfreetype6
+      - libtheora0
+      - libogg0
+      - libvorbis0a
+      - libvorbisfile3
