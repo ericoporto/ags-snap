@@ -1,5 +1,5 @@
 name: ags # you probably want to 'snapcraft register <name>'
-version: '3.4.1.13' # just for humans, typically '1.2+git' or '1.3.2'
+version: '3.4.1.14' # just for humans, typically '1.2+git' or '1.3.2'
 summary: adventure game studio engine for playing ags games. # 79 char long summary
 description: |
   Run adventure games made in Adventure Game Studio, by using the ags linux engine.
@@ -44,7 +44,7 @@ parts:
       - -usr/share/alsa/pcm/surround51.conf
       - -usr/share/alsa/pcm/surround71.conf
 
-    source: https://github.com/adventuregamestudio/ags/archive/v.3.4.1.13.tar.gz
+    source: https://github.com/adventuregamestudio/ags/archive/v.3.4.1.14.tar.gz
     build-packages:
       - g++
       - gcc
