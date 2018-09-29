@@ -8,56 +8,18 @@ description: |
 grade: devel # must be 'stable' to release into candidate/stable channels
 confinement: strict # use 'strict' once you have the right plugs and slots
 
-# architectures: [amd64, i386]
-
 apps:
   ags:
-    command: desktop-launch alsa-launch $SNAP/bin/ags
+    command: desktop-launch alsa-launch ${SNAP}/bin/ags
     plugs:
+      - desktop
+      - desktop-legacy
       - home
       - pulseaudio
       - x11
       - opengl
 
 parts:
-  alsa:
-    after: [alsa-lib, alsa-plugins]
-  alsa-lib:
-    # configflags needed until LP#1766878 is fixed
-    configflags:
-    - --prefix=/usr
-    - --sysconfdir=/etc
-    - --libexec=/usr/lib
-    - --libdir=/usr/lib
-    - --localstatedir=/var
-    - --with-configdir=/snap/$SNAPCRAFT_PROJECT_NAME/current/usr/share/alsa
-    - --with-plugindir=/snap/$SNAPCRAFT_PROJECT_NAME/current/usr/lib/alsa-lib
-    - --disable-alisp
-    - --disable-aload
-    - --disable-python
-    - --disable-rawmidi
-    - --disable-static
-    - --disable-topology
-    - --disable-ucm
-    - --enable-symbolic-functions
-  alsa-plugins:
-    after: [alsa-lib]
-    # configflags needed until LP#1766878 is fixed
-    configflags:
-    - --prefix=/usr
-    - --sysconfdir=/etc
-    - --libexec=/usr/lib
-    - --libdir=/usr/lib
-    - --localstatedir=/var
-    - --disable-arcamav
-    - --disable-avcodec
-    - --disable-jack
-    - --disable-mix
-    - --disable-oss
-    - --disable-usbstream
-    - --with-plugindir=/snap/$SNAPCRAFT_PROJECT_NAME/current/usr/lib/alsa-lib
-    - --disable-static
-    - LDFLAGS=-L$SNAPCRAFT_STAGE/usr/lib
   ags:
     after: [alsa, desktop-glib-only]
     plugin: make
@@ -65,19 +27,6 @@ parts:
       - --directory=Engine
     make-install-var: PREFIX
     source-type: tar
-    stage:
-      - -usr/share/alsa/alsa.conf
-      - -usr/share/alsa/cards/USB-Audio.conf
-      - -usr/share/alsa/cards/aliases.conf
-      - -usr/share/alsa/pcm/dmix.conf
-      - -usr/share/alsa/pcm/dsnoop.conf
-      - -usr/share/alsa/pcm/surround21.conf
-      - -usr/share/alsa/pcm/surround40.conf
-      - -usr/share/alsa/pcm/surround41.conf
-      - -usr/share/alsa/pcm/surround50.conf
-      - -usr/share/alsa/pcm/surround51.conf
-      - -usr/share/alsa/pcm/surround71.conf
-
     source: https://github.com/adventuregamestudio/ags/archive/v.3.4.1.14.tar.gz
     build-packages:
       - g++
@@ -103,4 +52,146 @@ parts:
       - libogg0
       - libvorbis0a
       - libvorbisfile3
+    stage:
+    - -usr/share/alsa/alsa.conf
+    - -usr/share/alsa/cards/USB-Audio.conf
+    - -usr/share/alsa/cards/aliases.conf
+    - -usr/share/alsa/pcm/dmix.conf
+    - -usr/share/alsa/pcm/dsnoop.conf
+    - -usr/share/alsa/pcm/surround21.conf
+    - -usr/share/alsa/pcm/surround40.conf
+    - -usr/share/alsa/pcm/surround41.conf
+    - -usr/share/alsa/pcm/surround50.conf
+    - -usr/share/alsa/pcm/surround51.conf
+    - -usr/share/alsa/pcm/surround71.conf
 
+  alsa-lib:
+    plugin: autotools
+    source: https://mirrorservice.org/sites/ftp.alsa-project.org/pub/lib/alsa-lib-1.1.6.tar.bz2
+    configflags:
+    - --prefix=/usr
+    - --sysconfdir=/etc
+    - --libexec=/usr/lib
+    - --libdir=/usr/lib
+    - --localstatedir=/var
+    - --with-configdir=/snap/$SNAPCRAFT_PROJECT_NAME/current/usr/share/alsa
+    - --with-plugindir=/snap/$SNAPCRAFT_PROJECT_NAME/current/usr/lib/alsa-lib
+    - --disable-alisp
+    - --disable-aload
+    - --disable-python
+    - --disable-rawmidi
+    - --disable-static
+    - --disable-topology
+    - --disable-ucm
+    - --enable-symbolic-functions
+    override-build: |
+      snapcraftctl build
+
+      for pcfile in $SNAPCRAFT_PART_INSTALL/usr/lib/pkgconfig/*.pc; do
+        sed -i -E "s~^((include|lib)dir=)/usr(/local)?~\1\${prefix}~g" ${pcfile} || true
+        sed -i -E "s~^((exec_)?prefix=)(/usr(/local)?)~\1/\3~" ${pcfile} || true
+      done
+    organize:
+      snap/*/current/usr/lib/*: usr/lib/
+      snap/*/current/usr/share/*: usr/share/
+    stage:
+    - usr/include
+    - usr/lib
+    - usr/share/alsa
+    prime:
+    - usr/lib/*.so
+    - usr/lib/*.so.*
+    - usr/share/alsa
+
+  alsa-plugins:
+    # after: [alsa-lib]
+    plugin: autotools
+    source: https://mirrorservice.org/sites/ftp.alsa-project.org/pub/plugins/alsa-plugins-1.1.6.tar.bz2
+    configflags:
+    - --prefix=/usr
+    - --sysconfdir=/etc
+    - --libexec=/usr/lib
+    - --libdir=/usr/lib
+    - --localstatedir=/var
+    - --disable-arcamav
+    - --disable-avcodec
+    - --disable-jack
+    - --disable-mix
+    - --disable-oss
+    - --disable-usbstream
+    - --with-plugindir=/snap/$SNAPCRAFT_PROJECT_NAME/current/usr/lib/alsa-lib
+    - --disable-static
+    - LDFLAGS=-L$SNAPCRAFT_STAGE/usr/lib
+    organize:
+      snap/*/current/usr/lib/*: usr/lib/
+    stage:
+    - lib
+    - usr/lib
+    - usr/share/alsa
+    prime:
+    - lib
+    - usr/lib
+    - usr/share/alsa
+    build-packages:
+    - libpulse-dev
+    stage-packages:
+    - libpulse0
+
+  alsa:
+    plugin: nil
+    source: https://github.com/diddledan/snapcraft-alsa.git
+    # after: [alsa-plugins, alsa-lib]
+    override-pull: |
+      cat > alsa.conf <<EOF
+      pcm.!default {
+        type pulse
+        fallback "sysdefault"
+        hint {
+          show on
+          description "Default ALSA Output (currently PulseAudio Sound Server)"
+        }
+      }
+
+      ctl.!default {
+        type pulse
+        fallback "sysdefault"
+      }
+      EOF
+
+      cat > alsa-launch <<EOF
+      #!/bin/bash
+      if [ "\$SNAP_ARCH" == "amd64" ]; then
+        ARCH="x86_64-linux-gnu"
+      elif [ "\$SNAP_ARCH" == "armhf" ]; then
+        ARCH="arm-linux-gnueabihf"
+      elif [ "\$SNAP_ARCH" == "arm64" ]; then
+        ARCH="aarch64-linux-gnu"
+      else
+        ARCH="\$SNAP_ARCH-linux-gnu"
+      fi
+      export LD_LIBRARY_PATH="\$SNAP/usr/lib/alsa-lib:\$SNAP/usr/lib/\$ARCH:\$SNAP/usr/lib/\$ARCH/pulseaudio:\$LD_LIBRARY_PATH"
+      export ALSA_CONFIG_PATH="\$SNAP/etc/alsa.conf"
+      # Make PulseAudio socket available inside the snap-specific $XDG_RUNTIME_DIR
+      if [ -n "$XDG_RUNTIME_DIR" ]; then
+          pulsenative="pulse/native"
+          pulseaudio_sockpath="$XDG_RUNTIME_DIR/../$pulsenative"
+          if [ -S "$pulseaudio_sockpath" ]; then
+              export PULSE_SERVER="unix:${pulseaudio_sockpath}"
+          fi
+      fi
+      exec "\$@"
+      EOF
+    override-build: |
+      snapcraftctl build
+      install -m644 -D -t $SNAPCRAFT_PART_INSTALL/etc alsa.conf
+      install -m755 -D -t $SNAPCRAFT_PART_INSTALL/bin alsa-launch
+
+  alsa-chain-test:
+    after: [alsa, alsa-lib-chain-test, alsa-plugins-chain-test]
+    plugin: nil
+  alsa-lib-chain-test:
+    after: [alsa-lib]
+    plugin: nil
+  alsa-plugins-chain-test:
+    after: [alsa-lib-chain-test, alsa-plugins]
+    plugin: nil
