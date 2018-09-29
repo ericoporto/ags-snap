@@ -11,7 +11,30 @@ you can install with
 
     sudo snap install ags
 
-And then you can run it by typing ags in a directory containing either a 
+Plugins are not supported by this distribution.
+
+## Usage
+
+After installation, you can run it by typing ags in a directory containing either a 
 `game.ags` or a `game.exe`, made in AGS.
 
-Plugins are not supported by this distribution.
+    ags [OPTIONS] [GAMEFILE or DIRECTORY]
+
+    Options:
+      --windowed                   Force display mode to windowed
+      --fullscreen                 Force display mode to fullscreen
+      --hicolor                    Downmix 32bit colors to 16bit
+      --gfxfilter <filter> [<scaling>]
+                                   Request graphics filter. Available options:
+                                     none, stdscale, hqx;
+                                     scaling is specified by integer number
+      --log                        Enable program output to the log file
+      --no-log                     Disable program output to the log file,
+                                     overriding configuration file setting
+      --help                       Print this help message
+
+    Gamefile options:
+      /dir/path/game/              Launch the game in specified directory
+      /dir/path/game/penguin.exe   Launch penguin.exe
+      [nothing]                    Launch the game in the current directory
+
