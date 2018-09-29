@@ -12,7 +12,7 @@ confinement: strict # use 'strict' once you have the right plugs and slots
 
 apps:
   ags:
-    command: alsa-launch $SNAP/bin/ags
+    command: desktop-launch alsa-launch $SNAP/bin/ags
     plugs:
       - home
       - pulseaudio
@@ -22,10 +22,44 @@ apps:
 parts:
   alsa:
     after: [alsa-lib, alsa-plugins]
+  alsa-lib:
+    # configflags needed until LP#1766878 is fixed
+    configflags:
+    - --prefix=/usr
+    - --sysconfdir=/etc
+    - --libexec=/usr/lib
+    - --libdir=/usr/lib
+    - --localstatedir=/var
+    - --with-configdir=/snap/$SNAPCRAFT_PROJECT_NAME/current/usr/share/alsa
+    - --with-plugindir=/snap/$SNAPCRAFT_PROJECT_NAME/current/usr/lib/alsa-lib
+    - --disable-alisp
+    - --disable-aload
+    - --disable-python
+    - --disable-rawmidi
+    - --disable-static
+    - --disable-topology
+    - --disable-ucm
+    - --enable-symbolic-functions
   alsa-plugins:
     after: [alsa-lib]
+    # configflags needed until LP#1766878 is fixed
+    configflags:
+    - --prefix=/usr
+    - --sysconfdir=/etc
+    - --libexec=/usr/lib
+    - --libdir=/usr/lib
+    - --localstatedir=/var
+    - --disable-arcamav
+    - --disable-avcodec
+    - --disable-jack
+    - --disable-mix
+    - --disable-oss
+    - --disable-usbstream
+    - --with-plugindir=/snap/$SNAPCRAFT_PROJECT_NAME/current/usr/lib/alsa-lib
+    - --disable-static
+    - LDFLAGS=-L$SNAPCRAFT_STAGE/usr/lib
   ags:
-    after: [alsa]
+    after: [alsa, desktop-glib-only]
     plugin: make
     make-parameters:
       - --directory=Engine
