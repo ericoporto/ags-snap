@@ -6,12 +6,24 @@
 snap for ags engine for playing games made in Adventure Game Studio on Linux 
 (license of snap code is not the license of ags).
 
+Plugins are not supported by this distribution.
+
+## Install
+
 Once this is really available on the [snap listing](https://snapcraft.io/ags) 
 you can install with
 
-    sudo snap install ags
+    snap install ags
 
-Plugins are not supported by this distribution.
+Alternatively, you can clone this repo and build and install yourself
+
+    git clone git@github.com:ericoporto/ags-snap.git
+    snapcraft
+    snap install ags_*.snap --dangerous
+
+To unninstal it, use remove
+
+    snap remove ags
 
 ## Usage
 
