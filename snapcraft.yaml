@@ -122,7 +122,7 @@ parts:
       done
 
     organize:
-      snap/*/current/usr/lib/*: usr/lib/$SNAPCRAFT_ARCH_TRIPLET/
+      snap/*/current/usr/lib/*: usr/lib/
       snap/*/current/usr/share/*: usr/share/
     stage:
     - -usr/share/alsa/alsa.conf
@@ -154,7 +154,7 @@ parts:
     - --disable-static
     - LDFLAGS=-L$SNAPCRAFT_STAGE/usr/lib
     organize:
-      snap/*/current/usr/lib/*: usr/lib/
+      snap/*/current/usr/lib/*: usr/lib/$SNAPCRAFT_ARCH_TRIPLET/
     stage:
     - lib
     - usr/lib
