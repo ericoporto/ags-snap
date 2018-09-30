@@ -25,6 +25,10 @@ parts:
     after: [alsa, desktop-glib-only]
     source: https://github.com/adventuregamestudio/lib-allegro.git
     plugin: cmake
+    configflags:
+        - -DALLEGRO_ALSA_VERSION=9
+        - -DALLEGRO_WITH_ALSADIGI=1
+        - -DALLEGRO_WITH_ALSAMIDI=1
     source-type: git
     override-pull: |
       snapcraftctl pull
