@@ -201,7 +201,7 @@ parts:
         ARCH="\$SNAP_ARCH-linux-gnu"
       fi
       export ALLEGRO_MODULES="\$SNAP/usr/lib/\$ARCH/allegro/4.4.2"
-      export LD_LIBRARY_PATH="\$SNAP/usr/lib/alsa-lib:\$SNAP/usr/lib/\$ARCH/pulseaudio:\$LD_LIBRARY_PATH"
+      export LD_LIBRARY_PATH="\$SNAP/usr/lib/alsa-lib:\$SNAP/usr/lib/\$ARCH/alsa-lib:\$SNAP/usr/lib/\$ARCH/pulseaudio:\$LD_LIBRARY_PATH"
       export ALSA_CONFIG_PATH="\$SNAP/usr/share/alsa/alsa.conf"
       # Make PulseAudio socket available inside the snap-specific $XDG_RUNTIME_DIR
       if [ -n "$XDG_RUNTIME_DIR" ]; then
