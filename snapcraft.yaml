@@ -29,6 +29,8 @@ parts:
     override-pull: |
       snapcraftctl pull
       git checkout allegro-4.4.2-agspatch
+    configflags:
+      - -DWANT_DOCS=0
     build-packages:
       - g++
       - gcc
