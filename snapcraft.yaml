@@ -120,8 +120,9 @@ parts:
         sed -i -E "s~^((include|lib)dir=)/usr(/local)?~\1\${prefix}~g" ${pcfile} || true
         sed -i -E "s~^((exec_)?prefix=)(/usr(/local)?)~\1/\3~" ${pcfile} || true
       done
+
     organize:
-      snap/*/current/usr/lib/*: usr/lib/
+      snap/*/current/usr/lib/*: usr/lib/$SNAPCRAFT_ARCH_TRIPLET/
       snap/*/current/usr/share/*: usr/share/
     stage:
     - -usr/share/alsa/alsa.conf
@@ -200,7 +201,7 @@ parts:
         ARCH="\$SNAP_ARCH-linux-gnu"
       fi
       export ALLEGRO_MODULES="\$SNAP/usr/lib/\$ARCH/allegro/4.4.2"
-      export LD_LIBRARY_PATH="\$SNAP/usr/lib/alsa-lib:\$SNAP/lib/allegro/4.4.2:\$SNAP/usr/lib/\$ARCH/pulseaudio:\$LD_LIBRARY_PATH"
+      export LD_LIBRARY_PATH="\$SNAP/usr/lib/alsa-lib:\$SNAP/usr/lib/\$ARCH/pulseaudio:\$LD_LIBRARY_PATH"
       export ALSA_CONFIG_PATH="\$SNAP/usr/share/alsa/alsa.conf"
       # Make PulseAudio socket available inside the snap-specific $XDG_RUNTIME_DIR
       if [ -n "$XDG_RUNTIME_DIR" ]; then
