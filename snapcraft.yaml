@@ -23,7 +23,7 @@ parts:
 
   lib-alleg:
     after: [alsa, desktop-glib-only]
-    source: git@github.com:adventuregamestudio/lib-allegro.git
+    source: https://github.com:adventuregamestudio/lib-allegro.git
     plugin: cmake
     source-type: git
     override-pull: |
