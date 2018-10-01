@@ -46,6 +46,8 @@ parts:
       - libtheora-dev 
       - libvorbis-dev
       - libogg-dev
+      - libso
+      - libasound2-dev
 
   ags:
     after: [alsa, desktop-glib-only,lib-alleg]
