@@ -10,8 +10,12 @@ Plugins are not supported by this distribution.
 
 ## Install
 
-Once this is really available on the [snap listing](https://snapcraft.io/ags) 
-you can install with
+You can already install from edge to get the latest version.
+
+    snap install --edge ags
+
+Once this is available on the [snap listing](https://snapcraft.io/ags) 
+you will be able to install with just
 
     snap install ags
 
@@ -28,7 +32,8 @@ To unninstal it, use remove
 ## Usage
 
 After installation, you can run it by typing ags in a directory containing either a 
-`game.ags` or a `game.exe`, made in AGS.
+`game.ags` or a `game.exe`, made in AGS. In some computers, ags runs better using windowed
+with `ags --windowed`.
 
     ags [OPTIONS] [GAMEFILE or DIRECTORY]
 
