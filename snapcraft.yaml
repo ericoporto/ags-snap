@@ -113,6 +113,8 @@ parts:
     - -usr/share/alsa/pcm/surround50.conf
     - -usr/share/alsa/pcm/surround51.conf
     - -usr/share/alsa/pcm/surround71.conf
+    - -usr/lib/x86_64-linux-gnu/libasound.so.2
+    - -usr/lib/x86_64-linux-gnu/libasound.so.2.0.0
 
   # specify remote part build order
   alsa:
