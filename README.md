@@ -31,7 +31,7 @@ To unninstal it, use remove
 
 ## Usage
 
-After installation, you can run it by typing ags in a directory containing either a 
+After installation, you can run it by typing **`ags`** in a directory containing either a 
 `game.ags` or a `game.exe`, made in AGS. In some computers, ags runs better using windowed
 with `ags --windowed`.
 
