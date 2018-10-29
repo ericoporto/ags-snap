@@ -5,7 +5,7 @@ description: |
   Run adventure games made in Adventure Game Studio, by using the ags linux engine.
   When installed, just run ags in the folder that contains the game!
 
-grade: devel # must be 'stable' to release into candidate/stable channels
+grade: stable # must be 'stable' to release into candidate/stable channels
 confinement: strict # use 'strict' once you have the right plugs and slots
 
 apps:
