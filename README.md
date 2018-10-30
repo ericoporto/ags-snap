@@ -10,7 +10,7 @@ Plugins are not supported by this distribution.
 
 ## Install
 
-You can already install from [snap listing](https://snapcraft.io/ags):
+You can install from [snap listing](https://snapcraft.io/ags):
 
     snap install ags
 
