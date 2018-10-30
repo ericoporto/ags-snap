@@ -10,12 +10,7 @@ Plugins are not supported by this distribution.
 
 ## Install
 
-You can already install from edge to get the latest version.
-
-    snap install --edge ags
-
-Once this is available on the [snap listing](https://snapcraft.io/ags) 
-you will be able to install with just
+You can already install from [snap listing](https://snapcraft.io/ags):
 
     snap install ags
 
