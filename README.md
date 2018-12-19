@@ -1,5 +1,7 @@
 # ags-snap
 
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/ags)
+
 [![Snap Status](https://build.snapcraft.io/badge/ericoporto/ags-snap.svg)](https://build.snapcraft.io/user/ericoporto/ags-snap) 
 [![Build Status](https://travis-ci.com/ericoporto/ags-snap.svg?branch=master)](https://travis-ci.com/ericoporto/ags-snap)
 
