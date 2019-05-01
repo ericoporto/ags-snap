@@ -23,9 +23,11 @@ parts:
 
   lib-alleg:
     after: [alsa, desktop-glib-only]
-    source: https://github.com/liballeg/allegro5/releases/download/4.4.3.1/allegro-4.4.3.1.tar.gz
-    source-type: tar
-    #source-branch: allegro-4.4.2-agspatch
+    #source: https://github.com/liballeg/allegro5/releases/download/4.4.3.1/allegro-4.4.3.1.tar.gz
+    #source-type: tar
+    source: https://github.com/adventuregamestudio/lib-allegro.git
+    source-type: git
+    source-branch: allegro-4.4.2-agspatch
     plugin: cmake
     override-build: |
       snapcraftctl build
@@ -41,7 +43,7 @@ parts:
         ARCH="\$SNAP_ARCH-linux-gnu"
       fi
 
-      export ALLEGRO_MODULES="\$SNAP/usr/lib/\$ARCH/allegro/4.4.3"
+      export ALLEGRO_MODULES="\$SNAP/usr/lib/\$ARCH/allegro/4.4.2"
       exec "\$@"
       EOF
 
