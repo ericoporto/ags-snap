@@ -1,5 +1,5 @@
 name: ags # you probably want to 'snapcraft register <name>'
-version: '3.5.0.10' # just for humans, typically '1.2+git' or '1.3.2'
+version: '3.5.0.23' # just for humans, typically '1.2+git' or '1.3.2'
 summary: adventure game studio engine for playing ags games. # 79 char long summary
 description: |
   Run adventure games made in Adventure Game Studio, by using the ags linux engine.
@@ -7,10 +7,11 @@ description: |
 
 grade: stable # must be 'stable' to release into candidate/stable channels
 confinement: strict # use 'strict' once you have the right plugs and slots
+base: core18
 
 apps:
   ags:
-    command:  desktop-launch alsa-launch allegro-modules-launch ${SNAP}/bin/ags
+    command:  desktop-launch alsa-launch allegro-modules-launch $SNAP/bin/ags
     plugs:
       - desktop
       - desktop-legacy
@@ -22,9 +23,9 @@ apps:
 parts:
 
   lib-alleg:
-    after: [alsa, desktop-glib-only]
-    #source: https://github.com/liballeg/allegro5/releases/download/4.4.3.1/allegro-4.4.3.1.tar.gz
-    #source-type: tar
+    after: [alsa-mixin, desktop-glib-only]
+#   source: https://github.com/liballeg/allegro5/releases/download/4.4.3.1/allegro-4.4.3.1.tar.gz
+#   source-type: tar
     source: https://github.com/adventuregamestudio/lib-allegro.git
     source-type: git
     source-branch: allegro-4.4.2-agspatch
@@ -56,7 +57,7 @@ parts:
       - g++
       - gcc
       - make
-      - libpng12-dev 
+      - libpng-dev 
       - git
       - debhelper 
       - build-essential
@@ -69,21 +70,25 @@ parts:
       - libasound2-dev
 
   ags:
-    after: [alsa, desktop-glib-only,lib-alleg]
+    after: [alsa-mixin, desktop-glib-only,lib-alleg]
     plugin: make
     make-parameters:
       - --directory=Engine
     make-install-var: PREFIX
     source-type: tar
-    source: https://github.com/adventuregamestudio/ags/releases/download/v.3.5.0.10/ags_linux_v.3.5.0.10.tar.xz
+    source: https://github.com/adventuregamestudio/ags/releases/download/v.3.5.0.23/ags_linux_src_v.3.5.0.23.tar.xz
     override-pull: |
       snapcraftctl pull
+      sed -i '58s/LDFLAGS  +=/LDFLAGS  += \-fno\-pie \-no\-pie/' $SNAPCRAFT_PART_SRC/Engine/Makefile-defs.linux
 #      sed -i '605s/DIGI_NONE/DIGI_ALSA/' $SNAPCRAFT_PART_SRC/Engine/main/engine.cpp
+    override-build: |
+      snapcraftctl build
+
     build-packages:
       - g++
       - gcc
       - make
-      - libpng12-dev 
+      - libpng-dev 
       - git
       - debhelper 
       - build-essential
@@ -96,7 +101,7 @@ parts:
     stage-packages:
       - libx11-6
       - libxcursor1
-      - libpng12-0
+      - libpng16-16
       - libaldmb1
       - libfreetype6
       - libtheora0
@@ -118,41 +123,72 @@ parts:
     - -usr/lib/x86_64-linux-gnu/libasound.so.2
     - -usr/lib/x86_64-linux-gnu/libasound.so.2.0.0
 
+  # This part installs the glib dependencies and a `desktop-launch` script to initialise
+  # desktop-specific features such as OpenGL, fonts, themes and the XDG environment.
+  # 
+  # It is copied from the snapcraft desktop helpers project and the `source` key is
+  # changed to point to https://github.com/ubuntu/snapcraft-desktop-helpers.git
+  # Please periodically check the desktop helpers repo for updates and copy the changes.
+  #    https://github.com/ubuntu/snapcraft-desktop-helpers/blob/master/snapcraft.yaml
+  #
+  desktop-glib-only:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: glib-only
+    plugin: make
+    build-packages:
+      - libglib2.0-dev
+    stage-packages:
+      - libglib2.0-bin
+
   # specify remote part build order
-  alsa:
-    after: [alsa-lib, alsa-plugins]
-  alsa-lib:
-    # configflags needed until LP#1766878 is fixed
-    configflags:
-    - --prefix=/usr
-    - --sysconfdir=/etc
-    - --libexec=/usr/lib
-    - --libdir=/usr/lib
-    - --localstatedir=/var
-    - --with-configdir=/snap/$SNAPCRAFT_PROJECT_NAME/current/usr/share/alsa
-    - --with-plugindir=/snap/$SNAPCRAFT_PROJECT_NAME/current/usr/lib/alsa-lib
-    - --disable-alisp
-    - --disable-aload
-    - --disable-python
-    - --disable-static
-    - --disable-topology
-    - --disable-ucm
-    - --enable-symbolic-functions
-  alsa-plugins:
-    after: [alsa-lib]
-    # configflags needed until LP#1766878 is fixed
-    configflags:
-    - --prefix=/usr
-    - --sysconfdir=/etc
-    - --libexec=/usr/lib
-    - --libdir=/usr/lib
-    - --localstatedir=/var
-    - --disable-arcamav
-    - --disable-avcodec
-    - --disable-jack
-    - --disable-mix
-    - --disable-oss
-    - --disable-usbstream
-    - --with-plugindir=/snap/$SNAPCRAFT_PROJECT_NAME/current/usr/lib/alsa-lib
-    - --disable-static
-    - LDFLAGS=-L$SNAPCRAFT_STAGE/usr/lib
+  alsa-mixin:
+    plugin: nil
+    source: https://github.com/diddlesnaps/snapcraft-alsa.git
+    override-pull: |
+      cat > asound.conf <<EOF
+      pcm.!default {
+          type pulse
+          fallback "sysdefault"
+          hint {
+              show on
+              description "Default ALSA Output (currently PulseAudio Sound Server)"
+          }
+      }
+      ctl.!default {
+          type pulse
+          fallback "sysdefault"
+      }
+      EOF
+      cat > alsa-launch <<EOF
+      #!/bin/bash
+      export ALSA_CONFIG_PATH="\$SNAP/etc/asound.conf"
+
+      if [ -d "\$SNAP/usr/lib/alsa-lib" ]; then
+          export LD_LIBRARY_PATH="\$LD_LIBRARY_PATH:\$SNAP/usr/lib/alsa-lib"
+      fi
+      if [ -d "\$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/alsa-lib" ]; then
+          export LD_LIBRARY_PATH="\$LD_LIBRARY_PATH:\$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/alsa-lib"
+      fi
+      export LD_LIBRARY_PATH="\$LD_LIBRARY_PATH:\$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio"
+
+      # Make PulseAudio socket available inside the snap-specific $XDG_RUNTIME_DIR
+      if [ -n "\$XDG_RUNTIME_DIR" ]; then
+          pulsenative="pulse/native"
+          pulseaudio_sockpath="\$XDG_RUNTIME_DIR/../\$pulsenative"
+          if [ -S "\$pulseaudio_sockpath" ]; then
+              export PULSE_SERVER="unix:\${pulseaudio_sockpath}"
+          fi
+      fi
+
+      exec "\$@"
+      EOF
+      chmod +x alsa-launch
+    override-build: |
+      snapcraftctl build
+      install -m644 -D -t $SNAPCRAFT_PART_INSTALL/etc asound.conf
+      install -m755 -D -t $SNAPCRAFT_PART_INSTALL/bin alsa-launch
+    build-packages:
+      - libasound2-dev
+    stage-packages:
+      - libasound2
+      - libasound2-plugins
